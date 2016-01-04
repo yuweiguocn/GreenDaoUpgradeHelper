@@ -13,8 +13,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "test",
+        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "test.db",
                 null);
+        daoMaster = new DaoMaster(helper.getWritableDatabase());
+
     }
 
 }

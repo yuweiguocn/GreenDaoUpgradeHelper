@@ -4,9 +4,9 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import de.greenrobot.dao.AbstractDao;
@@ -108,30 +108,24 @@ public class MigrationHelper {
 
             for(int j = 0; j < daoConfig.properties.length; j++) {
                 String columnName = daoConfig.properties[j].columnName;
+                properties.add(columnName);
+                String type = null;
 
-                if(getColumns(db, tableName).contains(columnName)) {
-                    properties.add(columnName);
-
-                    String type = null;
-
-                    try {
-                        type = getTypeByClass(daoConfig.properties[j].type);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    createTableStringBuilder.append(divider).append(columnName).append(" ").append(type);
-
-                    if(daoConfig.properties[j].primaryKey) {
-                        createTableStringBuilder.append(" PRIMARY KEY");
-                    }
-
-                    divider = ",";
+                try {
+                    type = getTypeByClass(daoConfig.properties[j].type);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+                createTableStringBuilder.append(divider).append(columnName).append(" ").append(type);
+
+                if(daoConfig.properties[j].primaryKey) {
+                    createTableStringBuilder.append(" PRIMARY KEY");
+                }
+
+                divider = ",";
             }
             createTableStringBuilder.append(");");
-
             db.execSQL(createTableStringBuilder.toString());
-
         }
     }
 
@@ -172,7 +166,7 @@ public class MigrationHelper {
         if(type.equals(String.class)) {
             return "TEXT";
         }
-        if(type.equals(Long.class) || type.equals(Integer.class) || type.equals(long.class)) {
+        if(type.equals(Long.class) || type.equals(Integer.class) || type.equals(long.class) || type.equals(Date.class)) {
             return "INTEGER";
         }
         if(type.equals(Boolean.class)) {
