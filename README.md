@@ -6,6 +6,7 @@
 ```
 	MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
 ```
+
 ##使用说明
 1.在根目录的build.gradle文件的repositories内添加如下代码：
 ```
