@@ -69,6 +69,9 @@ public class MigrationHelper {
                 }
             }
             createTableStringBuilder.append(");");
+            if(createTableStringBuilder.toString().contains(" ();")){
+                continue;
+            }
 
             db.execSQL(createTableStringBuilder.toString());
 
@@ -156,6 +159,11 @@ public class MigrationHelper {
             StringBuilder dropTableStringBuilder = new StringBuilder();
 
             dropTableStringBuilder.append("DROP TABLE ").append(tempTableName);
+
+
+            if(insertTableStringBuilder.toString().contains("()")){
+                continue;
+            }
 
             db.execSQL(insertTableStringBuilder.toString());
             db.execSQL(dropTableStringBuilder.toString());

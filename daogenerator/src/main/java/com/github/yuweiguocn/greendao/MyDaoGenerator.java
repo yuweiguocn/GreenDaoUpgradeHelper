@@ -10,6 +10,7 @@ public class MyDaoGenerator {
         Schema schema = new Schema(6, "com.github.yuweiguocn.demo.greendao.db");
         addTest(schema);
         addTest2(schema);
+        addTest3(schema);
         new DaoGenerator().generateAll(schema, "../GreenDaoUpgradeHelper/app/src/main/java-gen");
     }
 
@@ -25,6 +26,15 @@ public class MyDaoGenerator {
     }
     private static void addTest2(Schema schema) {
         Entity testData = schema.addEntity("TestData2");
+        testData.addIdProperty().primaryKey().autoincrement();
+        testData.addStringProperty("testString");
+        testData.addLongProperty("testLong");
+        testData.addDateProperty("testDate");
+        testData.addIntProperty("testInt");
+        testData.addBooleanProperty("testBoolean");
+    }
+    private static void addTest3(Schema schema) {
+        Entity testData = schema.addEntity("TestData3");
         testData.addIdProperty().primaryKey().autoincrement();
         testData.addStringProperty("testString");
         testData.addLongProperty("testLong");
