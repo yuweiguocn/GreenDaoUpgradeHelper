@@ -21,6 +21,6 @@
 2.添加依赖
 ```
 	dependencies {
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v0.0.2'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v0.0.4'
 	}
 ```
