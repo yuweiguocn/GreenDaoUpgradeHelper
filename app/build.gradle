@@ -25,6 +25,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'de.greenrobot:greendao:2.0.0'
 
-    compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v0.0.4'
-//    compile project(':library')
+//    compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v0.0.5'
+    compile project(':library')
 }
