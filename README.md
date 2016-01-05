@@ -2,7 +2,7 @@
 一行代码搞定使用GreenDao开源框架的数据库升级
 
 ## 数据库升级处理
-在DaoMaster类的onUpgrade方法添加如下代码即可
+在DaoMaster类的onUpgrade方法添加如下代码即可，参数为所有的Dao类
 ```
 	MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
 ```
