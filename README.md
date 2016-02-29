@@ -1,14 +1,10 @@
-# GreenDaoUpgradeHelper
-一行代码搞定使用GreenDao开源框架的数据库升级
+# GreenDaoUpgradeHelper([中文版](./README_CH.md))
+GreenDaoUpgradeHelper is a database upgrade helper for greenDao.Use GreenDaoUpgradeHelper can easy solve database upgrade that's just need one line code.
 
-## 数据库升级处理
-在DaoMaster类的onUpgrade方法添加如下代码即可，参数为所有的Dao类
-```
-	MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
-```
 
-##使用说明
-1.在根目录的build.gradle文件的repositories内添加如下代码：
+
+##How use
+1.Add it in your root build.gradle at the end of repositories:
 ```
 	allprojects {
 		repositories {
@@ -18,19 +14,38 @@
 	}
 ```
 
-2.添加依赖
+2.Add the dependency
 ```
 	dependencies {
 	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v0.0.5'
 	}
 ```
 
+3.Add the following code,arguments is all of generated Dao class:
 
-##感谢
+```
+public class DaoMaster extends AbstractDaoMaster {
+	...
+	public static class DevOpenHelper extends OpenHelper {
+		...
+		@Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
+		}
+	}
+	...
+}
+
+```
+
+
+##Thanks
 [greenDAO](https://github.com/greenrobot/greenDAO)
 
 
-##联系方式
+##Contact me
 weibo:[@于卫国](http://weibo.com/weiguo58)
 
 gmail:[yuweiguocn@gmail.com](mailto:yuweiguocn@gmail.com)
+
+blog:[yuweiguo's blog](http://yuweiguocn.github.io)
