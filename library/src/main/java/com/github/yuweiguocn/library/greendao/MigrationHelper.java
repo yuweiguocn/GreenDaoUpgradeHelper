@@ -16,7 +16,7 @@ import de.greenrobot.dao.internal.DaoConfig;
  * greendao db upgrade helper class
  */
 public class MigrationHelper {
-	private static final String CONVERSION_CLASS_NOT_FOUND_EXCEPTION = "MIGRATION HELPER - CLASS DOESN'T MATCH WITH THE CURRENT PARAMETERS";
+    private static final String CONVERSION_CLASS_NOT_FOUND_EXCEPTION = "MIGRATION HELPER - CLASS DOESN'T MATCH WITH THE CURRENT PARAMETERS";
     private static MigrationHelper instance;
 
     public static MigrationHelper getInstance() {
@@ -40,7 +40,7 @@ public class MigrationHelper {
             String divider = "";
             String tableName = daoConfig.tablename;
             String tempTableName = daoConfig.tablename.concat("_TEMP");
-            ArrayList<String> properties = new ArrayList<>();
+            ArrayList<String> properties = new ArrayList<String>();
 
             StringBuilder createTableStringBuilder = new StringBuilder();
 
@@ -57,7 +57,7 @@ public class MigrationHelper {
                     try {
                         type = getTypeByClass(daoConfig.properties[j].type);
                     } catch (Exception e) {
-                    	e.printStackTrace();
+                        e.printStackTrace();
                     }
                     createTableStringBuilder.append(divider).append(columnName).append(" ").append(type);
 
@@ -101,7 +101,7 @@ public class MigrationHelper {
 
             String divider = "";
             String tableName = daoConfig.tablename;
-            ArrayList<String> properties = new ArrayList<>();
+            ArrayList<String> properties = new ArrayList<String>();
 
             StringBuilder createTableStringBuilder = new StringBuilder();
 
@@ -138,7 +138,7 @@ public class MigrationHelper {
 
             String tableName = daoConfig.tablename;
             String tempTableName = daoConfig.tablename.concat("_TEMP");
-            ArrayList<String> properties = new ArrayList();
+            ArrayList<String> properties = new ArrayList<String>();
 
             for (int j = 0; j < daoConfig.properties.length; j++) {
                 String columnName = daoConfig.properties[j].columnName;
@@ -186,12 +186,12 @@ public class MigrationHelper {
     }
 
     private static List<String> getColumns(SQLiteDatabase db, String tableName) {
-        List<String> columns = new ArrayList<>();
+        List<String> columns = new ArrayList<String>();
         Cursor cursor = null;
         try {
             cursor = db.rawQuery("SELECT * FROM " + tableName + " limit 1", null);
             if (cursor != null) {
-                columns = new ArrayList<>(Arrays.asList(cursor.getColumnNames()));
+                columns = new ArrayList<String>(Arrays.asList(cursor.getColumnNames()));
             }
         } catch (Exception e) {
             e.printStackTrace();
