@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.github.yuweiguocn.demo.greendao.db.DaoMaster;
+import com.github.yuweiguocn.demo.greendao.db.MySQLiteOpenHelper;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -13,7 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        DaoMaster.DevOpenHelper helper = new DaoMaster.DevOpenHelper(this, "test.db",
+        MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
                 null);
         daoMaster = new DaoMaster(helper.getWritableDatabase());
 

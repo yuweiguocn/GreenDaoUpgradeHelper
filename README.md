@@ -21,21 +21,33 @@ GreenDaoUpgradeHelper is a database upgrade helper for greenDao.Use GreenDaoUpgr
 	}
 ```
 
-3.Add the following code,arguments is all of generated Dao class:
+3.Add a new class that extends **DaoMaster.OpenHelper**,add a constructor,implement **onUpgrade** method and called **migrate** method,arguments is all of generated Dao class:
 
 ```
-public class DaoMaster extends AbstractDaoMaster {
-	...
-	public static class DevOpenHelper extends OpenHelper {
-		...
-		@Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
-		}
-	}
-	...
+MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
+```
+
+
+like this:  
+```
+public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
+    public MySQLiteOpenHelper(Context context, String name, SQLiteDatabase.CursorFactory factory) {
+        super(context, name, factory);
+    }
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
+    }
 }
 
+```  
+
+4.Finally,init like this:
+
+```
+MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
+                null);
+        daoMaster = new DaoMaster(helper.getWritableDatabase());
 ```
 
 
