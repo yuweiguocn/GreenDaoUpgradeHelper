@@ -2,203 +2,223 @@ package com.github.yuweiguocn.library.greendao;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.annotation.NonNull;
+import android.support.v4.util.ArrayMap;
 import android.text.TextUtils;
 
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import de.greenrobot.dao.AbstractDao;
+import de.greenrobot.dao.Property;
 import de.greenrobot.dao.internal.DaoConfig;
 
 /**
- * greendao db upgrade helper class
+ * 
+ * please call {@link #migrate(SQLiteDatabase, Class[])}
+ * 
+ * @author lixi
+ * @description <ForgetThisProject>
+ * @date 16/4/15
  */
-public class MigrationHelper {
-    private static final String CONVERSION_CLASS_NOT_FOUND_EXCEPTION = "MIGRATION HELPER - CLASS DOESN'T MATCH WITH THE CURRENT PARAMETERS";
-    private static MigrationHelper instance;
+public final class MigrationHelper {
 
-    public static MigrationHelper getInstance() {
-        if(instance == null) {
-            instance = new MigrationHelper();
-        }
-        return instance;
+    /**
+     *  key: javaType
+     *  value: dbType
+     */
+    private static final Map<Class, String> propertyToDbType = new ArrayMap<>(10);
+
+     /**
+     * propertyToDbType = new HashMap<PropertyType, String>();
+     * propertyToDbType.put(PropertyType.Boolean, "INTEGER");
+     * propertyToDbType.put(PropertyType.Byte, "INTEGER");
+     * propertyToDbType.put(PropertyType.Short, "INTEGER");
+     * propertyToDbType.put(PropertyType.Int, "INTEGER");
+     * propertyToDbType.put(PropertyType.Long, "INTEGER");
+     * propertyToDbType.put(PropertyType.Float, "REAL");
+     * propertyToDbType.put(PropertyType.Double, "REAL");
+     * propertyToDbType.put(PropertyType.String, "TEXT");
+     * propertyToDbType.put(PropertyType.ByteArray, "BLOB");
+     * propertyToDbType.put(PropertyType.Date, "INTEGER");
+     * <p/>
+     * <p/>
+     * propertyToJavaTypeNullable.put(PropertyType.Boolean, "Boolean");
+     * propertyToJavaTypeNullable.put(PropertyType.Byte, "Byte");
+     * propertyToJavaTypeNullable.put(PropertyType.Short, "Short");
+     * propertyToJavaTypeNullable.put(PropertyType.Int, "Integer");
+     * propertyToJavaTypeNullable.put(PropertyType.Long, "Long");
+     * propertyToJavaTypeNullable.put(PropertyType.Float, "Float");
+     * propertyToJavaTypeNullable.put(PropertyType.Double, "Double");
+     * propertyToJavaTypeNullable.put(PropertyType.String, "String");
+     * propertyToJavaTypeNullable.put(PropertyType.ByteArray, "byte[]");
+     * propertyToJavaTypeNullable.put(PropertyType.Date, "java.util.Date");
+     */
+    static {
+        propertyToDbType.put(Boolean.class, "INTEGER");
+        propertyToDbType.put(Byte.class, "INTEGER");
+        propertyToDbType.put(Short.class, "INTEGER");
+        propertyToDbType.put(Integer.class, "INTEGER");
+        propertyToDbType.put(Long.class, "INTEGER");
+        propertyToDbType.put(Float.class, "REAL");
+        propertyToDbType.put(Double.class, "REAL");
+        propertyToDbType.put(String.class, "TEXT");
+        propertyToDbType.put(Byte[].class, "BLOB");
+        propertyToDbType.put(Date.class, "INTEGER");
     }
 
-    public void migrate(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+
+    public static void migrate(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         generateTempTables(db, daoClasses);
-        dropAllTables(db, true,daoClasses);
-        createAllTables(db, false,daoClasses);
+        dropAllTables(db, true, daoClasses);
+        createAllTables(db, false, daoClasses);
         restoreData(db, daoClasses);
     }
 
-    private void generateTempTables(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
-        for(int i = 0; i < daoClasses.length; i++) {
+
+    private static void generateTempTables(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        for (int i = 0; i < daoClasses.length; i++) {
             DaoConfig daoConfig = new DaoConfig(db, daoClasses[i]);
 
-            String divider = "";
             String tableName = daoConfig.tablename;
             String tempTableName = daoConfig.tablename.concat("_TEMP");
-            ArrayList<String> properties = new ArrayList<String>();
 
+            // take all columns from exists table
+            List<String> columns = getColumns(db, tableName);
+
+            // create temp table
             StringBuilder createTableStringBuilder = new StringBuilder();
-
             createTableStringBuilder.append("CREATE TABLE ").append(tempTableName).append(" (");
 
-            for(int j = 0; j < daoConfig.properties.length; j++) {
-                String columnName = daoConfig.properties[j].columnName;
+            ArrayList<String> properties = new ArrayList<>();
+            boolean isFirstTime = true;
+            for (int j = 0; j < daoConfig.properties.length; j++) {
+                Property property = daoConfig.properties[j];
 
-                if(getColumns(db, tableName).contains(columnName)) {
-                    properties.add(columnName);
-
-                    String type = null;
-
-                    try {
-                        type = getTypeByClass(daoConfig.properties[j].type);
-                    } catch (Exception e) {
-                        e.printStackTrace();
+                if (columns.contains(property.columnName)) {
+                    properties.add(property.columnName);
+                    if (isFirstTime) {
+                        isFirstTime = false;
+                    } else {
+                        createTableStringBuilder.append(",");
                     }
-                    createTableStringBuilder.append(divider).append(columnName).append(" ").append(type);
-
-                    if(daoConfig.properties[j].primaryKey) {
+                    createTableStringBuilder.append(property.columnName).append(" ");
+                    createTableStringBuilder.append(getTypeByClass(property.type));
+                    if (property.primaryKey) {
                         createTableStringBuilder.append(" PRIMARY KEY");
                     }
-
-                    divider = ",";
                 }
             }
             createTableStringBuilder.append(");");
-            if(createTableStringBuilder.toString().contains(" ();")){
+            if (createTableStringBuilder.toString().contains(" ();")) {
                 continue;
             }
-
             db.execSQL(createTableStringBuilder.toString());
 
+            // insert all data to temp table
             StringBuilder insertTableStringBuilder = new StringBuilder();
-
             insertTableStringBuilder.append("INSERT INTO ").append(tempTableName).append(" (");
             insertTableStringBuilder.append(TextUtils.join(",", properties));
             insertTableStringBuilder.append(") SELECT ");
             insertTableStringBuilder.append(TextUtils.join(",", properties));
             insertTableStringBuilder.append(" FROM ").append(tableName).append(";");
-
             db.execSQL(insertTableStringBuilder.toString());
         }
     }
 
 
-    private void dropAllTables(SQLiteDatabase db, boolean ifExists,Class<? extends AbstractDao<?, ?>>... daoClasses){
-        for(int i = 0; i < daoClasses.length; i++) {
-            DaoConfig daoConfig = new DaoConfig(db, daoClasses[i]);
-            String sql = "DROP TABLE " + (ifExists ? "IF EXISTS " : "") + "\""+daoConfig.tablename+"\"";
-            db.execSQL(sql);
-        }
+    private static void dropAllTables(SQLiteDatabase db, boolean ifExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        reflectMethod(db, "dropTable", ifExists, daoClasses);
     }
-    private void createAllTables(SQLiteDatabase db, boolean ifNotExists,Class<? extends AbstractDao<?, ?>>... daoClasses){
-        for(int i = 0; i < daoClasses.length; i++) {
-            DaoConfig daoConfig = new DaoConfig(db, daoClasses[i]);
 
-            String divider = "";
-            String tableName = daoConfig.tablename;
-            ArrayList<String> properties = new ArrayList<String>();
+    private static void createAllTables(SQLiteDatabase db, boolean ifNotExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        reflectMethod(db, "createTable", ifNotExists, daoClasses);
+    }
 
-            StringBuilder createTableStringBuilder = new StringBuilder();
-
-            String constraint = ifNotExists? "IF NOT EXISTS ": "";
-
-            createTableStringBuilder.append("CREATE TABLE ").append(constraint).append(tableName).append(" (");
-
-            for(int j = 0; j < daoConfig.properties.length; j++) {
-                String columnName = daoConfig.properties[j].columnName;
-                properties.add(columnName);
-                String type = null;
-
-                try {
-                    type = getTypeByClass(daoConfig.properties[j].type);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                createTableStringBuilder.append(divider).append(columnName).append(" ").append(type);
-
-                if(daoConfig.properties[j].primaryKey) {
-                    createTableStringBuilder.append(" PRIMARY KEY");
-                }
-
-                divider = ",";
+    /**
+     * dao class already define the sql exec method, so just invoke it
+     */
+    private static void reflectMethod(SQLiteDatabase db, String methodName, boolean isExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        if (daoClasses.length < 1) {
+            return;
+        }
+        try {
+            for (Class cls : daoClasses) {
+                Method method = cls.getDeclaredMethod(methodName, SQLiteDatabase.class, Boolean.class);
+                method.invoke(null, db, isExists);
             }
-            createTableStringBuilder.append(");");
-            db.execSQL(createTableStringBuilder.toString());
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 
-    private void restoreData(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
-        for(int i = 0; i < daoClasses.length; i++) {
+    private static void restoreData(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        for (int i = 0; i < daoClasses.length; i++) {
             DaoConfig daoConfig = new DaoConfig(db, daoClasses[i]);
-
             String tableName = daoConfig.tablename;
             String tempTableName = daoConfig.tablename.concat("_TEMP");
-            ArrayList<String> properties = new ArrayList<String>();
-
+            // get all columns from tempTable, take careful to use the columns list
+            List<String> columns = getColumns(db, tempTableName);
+            ArrayList<String> properties = new ArrayList<>(columns.size());
             for (int j = 0; j < daoConfig.properties.length; j++) {
                 String columnName = daoConfig.properties[j].columnName;
-
-                if(getColumns(db, tempTableName).contains(columnName)) {
+                if (columns.contains(columnName)) {
                     properties.add(columnName);
                 }
             }
-
-            StringBuilder insertTableStringBuilder = new StringBuilder();
-
-            insertTableStringBuilder.append("INSERT INTO ").append(tableName).append(" (");
-            insertTableStringBuilder.append(TextUtils.join(",", properties));
-            insertTableStringBuilder.append(") SELECT ");
-            insertTableStringBuilder.append(TextUtils.join(",", properties));
-            insertTableStringBuilder.append(" FROM ").append(tempTableName).append(";");
-
-            StringBuilder dropTableStringBuilder = new StringBuilder();
-
-            dropTableStringBuilder.append("DROP TABLE ").append(tempTableName);
-
-
-            if(insertTableStringBuilder.toString().contains("()")){
-                continue;
+            if (properties.size() > 0) {
+                StringBuilder insertTableStringBuilder = new StringBuilder();
+                insertTableStringBuilder.append("INSERT INTO ").append(tableName).append(" (");
+                insertTableStringBuilder.append(TextUtils.join(",", properties));
+                insertTableStringBuilder.append(") SELECT ");
+                insertTableStringBuilder.append(TextUtils.join(",", properties));
+                insertTableStringBuilder.append(" FROM ").append(tempTableName).append(";");
+                db.execSQL(insertTableStringBuilder.toString());
             }
-
-            db.execSQL(insertTableStringBuilder.toString());
+            StringBuilder dropTableStringBuilder = new StringBuilder();
+            dropTableStringBuilder.append("DROP TABLE ").append(tempTableName);
             db.execSQL(dropTableStringBuilder.toString());
         }
     }
 
-    private String getTypeByClass(Class<?> type) throws Exception {
-        if(type.equals(String.class)) {
-            return "TEXT";
-        }
-        if(type.equals(Long.class) || type.equals(Integer.class) || type.equals(long.class) || type.equals(Date.class)) {
-            return "INTEGER";
-        }
-        if(type.equals(Boolean.class)) {
-            return "BOOLEAN";
-        }
 
-        Exception exception = new Exception(CONVERSION_CLASS_NOT_FOUND_EXCEPTION.concat(" - Class: ").concat(type.toString()));
-        throw exception;
+    /**
+     * @param type javaType
+     * @return dbType
+     */
+    private static String getTypeByClass(Class<?> type) {
+        return propertyToDbType.get(type);
     }
 
+
     private static List<String> getColumns(SQLiteDatabase db, String tableName) {
-        List<String> columns = new ArrayList<String>();
+        List<String> columns = null;
         Cursor cursor = null;
         try {
-            cursor = db.rawQuery("SELECT * FROM " + tableName + " limit 1", null);
-            if (cursor != null) {
-                columns = new ArrayList<String>(Arrays.asList(cursor.getColumnNames()));
+            cursor = db.rawQuery("SELECT * FROM " + tableName + " limit 0", null);
+            if (null != cursor && cursor.getColumnCount() > 0) {
+                columns = Arrays.asList(cursor.getColumnNames());
             }
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             if (cursor != null)
                 cursor.close();
+            if (null == columns)
+                columns = new ArrayList<>();
         }
         return columns;
     }
+
+
 }
