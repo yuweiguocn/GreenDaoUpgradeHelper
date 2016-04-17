@@ -94,7 +94,7 @@ public final class MigrationHelper {
 
             // create temp table
             StringBuilder createTableStringBuilder = new StringBuilder();
-            createTableStringBuilder.append("CREATE TABLE ").append(tempTableName).append(" (");
+            createTableStringBuilder.append("CREATE TEMPORARY TABLE ").append(tempTableName).append(" (");
 
             ArrayList<String> properties = new ArrayList<>();
             boolean isFirstTime = true;
@@ -115,19 +115,17 @@ public final class MigrationHelper {
                     }
                 }
             }
-            createTableStringBuilder.append(");");
-            if (createTableStringBuilder.toString().contains(" ();")) {
+            if (properties.isEmpty()) {
+                // the new version are totally different
                 continue;
             }
+            createTableStringBuilder.append(");");
             db.execSQL(createTableStringBuilder.toString());
 
-            // insert all data to temp table
+            // copy data from origin table 
             StringBuilder insertTableStringBuilder = new StringBuilder();
-            insertTableStringBuilder.append("INSERT INTO ").append(tempTableName).append(" (");
-            insertTableStringBuilder.append(TextUtils.join(",", properties));
-            insertTableStringBuilder.append(") SELECT ");
-            insertTableStringBuilder.append(TextUtils.join(",", properties));
-            insertTableStringBuilder.append(" FROM ").append(tableName).append(";");
+            insertTableStringBuilder.append(" INSERT INTO ").append(tempTableName);
+            insertTableStringBuilder.append(" SELECT * FROM ").append(tableName).append(";");
             db.execSQL(insertTableStringBuilder.toString());
         }
     }
@@ -150,7 +148,7 @@ public final class MigrationHelper {
         }
         try {
             for (Class cls : daoClasses) {
-                Method method = cls.getDeclaredMethod(methodName, SQLiteDatabase.class, Boolean.class);
+                Method method = cls.getDeclaredMethod(methodName, SQLiteDatabase.class, boolean.class);
                 method.invoke(null, db, isExists);
             }
         } catch (NoSuchMethodException e) {
@@ -177,11 +175,13 @@ public final class MigrationHelper {
                 }
             }
             if (properties.size() > 0) {
+                final String columnSQL = TextUtils.join(",", properties);
+
                 StringBuilder insertTableStringBuilder = new StringBuilder();
                 insertTableStringBuilder.append("INSERT INTO ").append(tableName).append(" (");
-                insertTableStringBuilder.append(TextUtils.join(",", properties));
+                insertTableStringBuilder.append(columnSQL);
                 insertTableStringBuilder.append(") SELECT ");
-                insertTableStringBuilder.append(TextUtils.join(",", properties));
+                insertTableStringBuilder.append(columnSQL);
                 insertTableStringBuilder.append(" FROM ").append(tempTableName).append(";");
                 db.execSQL(insertTableStringBuilder.toString());
             }
