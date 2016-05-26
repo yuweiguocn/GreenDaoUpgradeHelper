@@ -19,13 +19,13 @@ GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可
 2.添加依赖
 ```
 	dependencies {
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v0.0.5'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.0'
 	}
 ```
 
 3.添加一个新类继承**DaoMaster.OpenHelper**，添加构造函数并实现**onUpgrade**方法,在onUpgrade方法添加如下代码即可，参数为所有的Dao类：  
 ```
-	MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
+	MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
 ```
 完整代码：  
 ```
@@ -35,7 +35,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
     }
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
+        MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
     }
 }
 
