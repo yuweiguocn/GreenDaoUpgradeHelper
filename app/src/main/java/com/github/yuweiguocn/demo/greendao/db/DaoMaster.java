@@ -6,8 +6,6 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
-import com.github.yuweiguocn.library.greendao.MigrationHelper;
-
 import de.greenrobot.dao.AbstractDaoMaster;
 import de.greenrobot.dao.identityscope.IdentityScopeType;
 
@@ -42,19 +40,6 @@ public class DaoMaster extends AbstractDaoMaster {
         public void onCreate(SQLiteDatabase db) {
             Log.i("greenDAO", "Creating tables for schema version " + SCHEMA_VERSION);
             createAllTables(db, false);
-        }
-    }
-    
-    /** WARNING: Drops all table on Upgrade! Use only during development. */
-    public static class DevOpenHelper extends OpenHelper {
-        public DevOpenHelper(Context context, String name, CursorFactory factory) {
-            super(context, name, factory);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Log.i("greenDAO", "Upgrading schema from version " + oldVersion + " to " + newVersion + " by dropping all tables");
-            MigrationHelper.getInstance().migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
         }
     }
 
