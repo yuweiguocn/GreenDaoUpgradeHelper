@@ -4,6 +4,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.text.TextUtils;
+import android.util.Log;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -21,6 +22,9 @@ import de.greenrobot.dao.internal.DaoConfig;
  */
 public final class MigrationHelper {
 
+    public static boolean DEBUG = false;
+    private static String TAG = "MigrationHelper";
+
     public static void migrate(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         generateTempTables(db, daoClasses);
         dropAllTables(db, true, daoClasses);
@@ -37,15 +41,24 @@ public final class MigrationHelper {
             insertTableStringBuilder.append("CREATE TEMPORARY TABLE ").append(tempTableName);
             insertTableStringBuilder.append(" AS SELECT * FROM ").append(tableName).append(";");
             db.execSQL(insertTableStringBuilder.toString());
+            if (DEBUG) {
+                Log.d(TAG, "generate temp table " + tempTableName);
+            }
         }
     }
 
     private static void dropAllTables(SQLiteDatabase db, boolean ifExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "dropTable", ifExists, daoClasses);
+        if (DEBUG) {
+            Log.d(TAG, "drop all table");
+        }
     }
 
     private static void createAllTables(SQLiteDatabase db, boolean ifNotExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "createTable", ifNotExists, daoClasses);
+        if (DEBUG) {
+            Log.d(TAG, "create all table");
+        }
     }
 
     /**
@@ -93,10 +106,16 @@ public final class MigrationHelper {
                 insertTableStringBuilder.append(columnSQL);
                 insertTableStringBuilder.append(" FROM ").append(tempTableName).append(";");
                 db.execSQL(insertTableStringBuilder.toString());
+                if (DEBUG) {
+                    Log.d(TAG, "restore data to " + tableName);
+                }
             }
             StringBuilder dropTableStringBuilder = new StringBuilder();
             dropTableStringBuilder.append("DROP TABLE ").append(tempTableName);
             db.execSQL(dropTableStringBuilder.toString());
+            if (DEBUG) {
+                Log.d(TAG, "drop temp table " + tempTableName);
+            }
         }
     }
 
