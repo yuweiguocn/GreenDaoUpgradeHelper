@@ -19,7 +19,7 @@ GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可
 2.添加依赖
 ```
 	dependencies {
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.0'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.1'
 	}
 ```
 
@@ -44,6 +44,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
 4.初始化
 
 ```
+//MigrationHelper.DEBUG = true; //如果你想查看日志信息，请将DEBUG设置为true
 MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
                 null);
         daoMaster = new DaoMaster(helper.getWritableDatabase());

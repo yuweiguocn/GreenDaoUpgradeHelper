@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+    <data>
+        <variable
+            name="handlers"
+            type="com.github.yuweiguocn.demo.greendao.about.AboutClickHandlers"/>
+
+        <variable
+            name="about"
+            type="com.github.yuweiguocn.demo.greendao.bean.About"/>
+
+        <import type="android.text.Html"/>
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context=".ui.about.AboutActivity">
+
+        <include
+            android:id="@+id/include_toolbar"
+            layout="@layout/view_toolbar"/>
+
+        <TextView
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:text="@string/contact_me"
+            style="@style/TextStyle"
+            android:textSize="24sp"
+            />
+
+
+        <TextView
+            android:layout_marginTop="@dimen/activity_vertical_margin"
+            android:onClick="@{handlers::onClickGitHub}"
+            android:text="@{Html.fromHtml(about.github)}"
+            style="@style/TextStyle"
+            />
+
+        <TextView
+            android:onClick="@{handlers::onClickWeibo}"
+            android:text="@{Html.fromHtml(about.weibo)}"
+            style="@style/TextStyle"
+            />
+
+
+        <TextView
+            style="@style/TextStyle"
+            android:text="@{Html.fromHtml(about.email)}"
+            />
+
+
+        <TextView
+            android:onClick="@{handlers::onClickBlog}"
+            android:text="@{Html.fromHtml(about.blog)}"
+            style="@style/TextStyle"
+            />
+
+
+        <TextView
+            android:onClick="@{handlers::onClickJianshu}"
+            android:text="@{Html.fromHtml(about.jianshu)}"
+            style="@style/TextStyle"
+            />
+
+    </LinearLayout>
+</layout>

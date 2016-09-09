@@ -42,10 +42,28 @@ public final class MigrationHelper {
             insertTableStringBuilder.append(" AS SELECT * FROM ").append(tableName).append(";");
             db.execSQL(insertTableStringBuilder.toString());
             if (DEBUG) {
+                Log.d(TAG, "the table " + tableName +" columns are "+getColumnsStr(daoConfig));
                 Log.d(TAG, "generate temp table " + tempTableName);
+
             }
         }
     }
+
+    private static String getColumnsStr(DaoConfig daoConfig) {
+        if (daoConfig == null) {
+            return "no columns";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < daoConfig.allColumns.length; i++) {
+            builder.append(daoConfig.allColumns[i]);
+            builder.append(",");
+        }
+        if (builder.length() > 0) {
+            builder.deleteCharAt(builder.length() - 1);
+        }
+        return builder.toString();
+    }
+
 
     private static void dropAllTables(SQLiteDatabase db, boolean ifExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "dropTable", ifExists, daoClasses);
@@ -108,6 +126,7 @@ public final class MigrationHelper {
                 db.execSQL(insertTableStringBuilder.toString());
                 if (DEBUG) {
                     Log.d(TAG, "restore data to " + tableName);
+                    Log.d(TAG, "the table " + tableName +" columns are "+getColumnsStr(daoConfig));
                 }
             }
             StringBuilder dropTableStringBuilder = new StringBuilder();

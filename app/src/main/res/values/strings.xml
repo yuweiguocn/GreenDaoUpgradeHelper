@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">GreenDaoUpgradeDemo</string>
     <string name="explain">使用GreenDao数据库升级帮助类，只需一行代码即可完成数据库升级。</string>
+    <string name="about">About</string>
+    <string name="contact_me">Contact me</string>
 </resources>
