@@ -20,7 +20,7 @@ GreenDaoUpgradeHelper is a database upgrade helper for greenDao.Use GreenDaoUpgr
 2.Add the dependency
 ```
 	dependencies {
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.0'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.1'
 	}
 ```
 
@@ -48,6 +48,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
 4.Finally,init like this:
 
 ```
+//MigrationHelper.DEBUG = true;  //if you want see the log info,default is false
 MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
                 null);
         daoMaster = new DaoMaster(helper.getWritableDatabase());
