@@ -6,14 +6,16 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 
+import org.greenrobot.greendao.AbstractDao;
+import org.greenrobot.greendao.database.Database;
+import org.greenrobot.greendao.database.StandardDatabase;
+import org.greenrobot.greendao.internal.DaoConfig;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.internal.DaoConfig;
 
 /**
  * 
@@ -26,13 +28,28 @@ public final class MigrationHelper {
     private static String TAG = "MigrationHelper";
 
     public static void migrate(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
-        generateTempTables(db, daoClasses);
-        dropAllTables(db, true, daoClasses);
-        createAllTables(db, false, daoClasses);
-        restoreData(db, daoClasses);
+        Database database = new StandardDatabase(db);
+        if (DEBUG) {
+            Log.d(TAG, "【Database Version】" + db.getVersion());
+            Log.d(TAG, "【Generate temp table】start");
+        }
+        generateTempTables(database, daoClasses);
+        if (DEBUG) {
+            Log.d(TAG, "【Generate temp table】complete");
+        }
+        dropAllTables(database, true, daoClasses);
+        createAllTables(database, false, daoClasses);
+
+        if (DEBUG) {
+            Log.d(TAG, "【Restore data】start");
+        }
+        restoreData(database, daoClasses);
+        if (DEBUG) {
+            Log.d(TAG, "【Restore data】complete");
+        }
     }
 
-    private static void generateTempTables(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+    private static void generateTempTables(Database db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         for (int i = 0; i < daoClasses.length; i++) {
             DaoConfig daoConfig = new DaoConfig(db, daoClasses[i]);
             String tableName = daoConfig.tablename;
@@ -42,8 +59,8 @@ public final class MigrationHelper {
             insertTableStringBuilder.append(" AS SELECT * FROM ").append(tableName).append(";");
             db.execSQL(insertTableStringBuilder.toString());
             if (DEBUG) {
-                Log.d(TAG, "the table " + tableName +" columns are "+getColumnsStr(daoConfig));
-                Log.d(TAG, "generate temp table " + tempTableName);
+                Log.d(TAG, "【Table】" + tableName +"\n ---Columns-->"+getColumnsStr(daoConfig));
+                Log.d(TAG, "【Generate temp table】" + tempTableName);
 
             }
         }
@@ -65,30 +82,30 @@ public final class MigrationHelper {
     }
 
 
-    private static void dropAllTables(SQLiteDatabase db, boolean ifExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
+    private static void dropAllTables(Database db, boolean ifExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "dropTable", ifExists, daoClasses);
         if (DEBUG) {
-            Log.d(TAG, "drop all table");
+            Log.d(TAG, "【Drop all table】");
         }
     }
 
-    private static void createAllTables(SQLiteDatabase db, boolean ifNotExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
+    private static void createAllTables(Database db, boolean ifNotExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "createTable", ifNotExists, daoClasses);
         if (DEBUG) {
-            Log.d(TAG, "create all table");
+            Log.d(TAG, "【Create all table】");
         }
     }
 
     /**
      * dao class already define the sql exec method, so just invoke it
      */
-    private static void reflectMethod(SQLiteDatabase db, String methodName, boolean isExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
+    private static void reflectMethod(Database db, String methodName, boolean isExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         if (daoClasses.length < 1) {
             return;
         }
         try {
             for (Class cls : daoClasses) {
-                Method method = cls.getDeclaredMethod(methodName, SQLiteDatabase.class, boolean.class);
+                Method method = cls.getDeclaredMethod(methodName, Database.class, boolean.class);
                 method.invoke(null, db, isExists);
             }
         } catch (NoSuchMethodException e) {
@@ -100,7 +117,7 @@ public final class MigrationHelper {
         }
     }
 
-    private static void restoreData(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+    private static void restoreData(Database db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         for (int i = 0; i < daoClasses.length; i++) {
             DaoConfig daoConfig = new DaoConfig(db, daoClasses[i]);
             String tableName = daoConfig.tablename;
@@ -125,20 +142,19 @@ public final class MigrationHelper {
                 insertTableStringBuilder.append(" FROM ").append(tempTableName).append(";");
                 db.execSQL(insertTableStringBuilder.toString());
                 if (DEBUG) {
-                    Log.d(TAG, "restore data to " + tableName);
-                    Log.d(TAG, "the table " + tableName +" columns are "+getColumnsStr(daoConfig));
+                    Log.d(TAG, "【Restore data】 to " + tableName);
                 }
             }
             StringBuilder dropTableStringBuilder = new StringBuilder();
             dropTableStringBuilder.append("DROP TABLE ").append(tempTableName);
             db.execSQL(dropTableStringBuilder.toString());
             if (DEBUG) {
-                Log.d(TAG, "drop temp table " + tempTableName);
+                Log.d(TAG, "【Drop temp table】" + tempTableName);
             }
         }
     }
 
-    private static List<String> getColumns(SQLiteDatabase db, String tableName) {
+    private static List<String> getColumns(Database db, String tableName) {
         List<String> columns = null;
         Cursor cursor = null;
         try {

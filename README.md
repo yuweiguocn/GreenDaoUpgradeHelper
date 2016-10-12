@@ -20,7 +20,8 @@ GreenDaoUpgradeHelper is a database upgrade helper for greenDao.Use GreenDaoUpgr
 2.Add the dependency
 ```
 	dependencies {
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.1'
+	        compile 'org.greenrobot:greendao:3.2.0'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.1.0'
 	}
 ```
 

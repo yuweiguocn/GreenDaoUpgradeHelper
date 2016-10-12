@@ -1,13 +1,12 @@
 package com.github.yuweiguocn.demo.greendao.db;
 
-import android.database.sqlite.SQLiteDatabase;
-
 import java.util.Map;
 
-import de.greenrobot.dao.AbstractDao;
-import de.greenrobot.dao.AbstractDaoSession;
-import de.greenrobot.dao.identityscope.IdentityScopeType;
-import de.greenrobot.dao.internal.DaoConfig;
+import org.greenrobot.greendao.AbstractDao;
+import org.greenrobot.greendao.AbstractDaoSession;
+import org.greenrobot.greendao.database.Database;
+import org.greenrobot.greendao.identityscope.IdentityScopeType;
+import org.greenrobot.greendao.internal.DaoConfig;
 
 import com.github.yuweiguocn.demo.greendao.db.TestData;
 import com.github.yuweiguocn.demo.greendao.db.TestData2;
@@ -34,7 +33,7 @@ public class DaoSession extends AbstractDaoSession {
     private final TestData2Dao testData2Dao;
     private final TestData3Dao testData3Dao;
 
-    public DaoSession(SQLiteDatabase db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
+    public DaoSession(Database db, IdentityScopeType type, Map<Class<? extends AbstractDao<?, ?>>, DaoConfig>
             daoConfigMap) {
         super(db);
 
@@ -57,9 +56,9 @@ public class DaoSession extends AbstractDaoSession {
     }
     
     public void clear() {
-        testDataDaoConfig.getIdentityScope().clear();
-        testData2DaoConfig.getIdentityScope().clear();
-        testData3DaoConfig.getIdentityScope().clear();
+        testDataDaoConfig.clearIdentityScope();
+        testData2DaoConfig.clearIdentityScope();
+        testData3DaoConfig.clearIdentityScope();
     }
 
     public TestDataDao getTestDataDao() {
