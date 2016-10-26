@@ -26,6 +26,7 @@ GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可
 如果你使用的greendao是3.0以前的版本，请使用下面的依赖：
 ```
 	dependencies {
+	        compile 'de.greenrobot:greendao:2.0.0'
 	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.0.1'
 	}
 ```
