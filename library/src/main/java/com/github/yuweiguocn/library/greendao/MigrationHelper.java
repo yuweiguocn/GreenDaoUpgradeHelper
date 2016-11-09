@@ -49,7 +49,29 @@ public final class MigrationHelper {
             Log.d(TAG, "【Restore data】complete");
         }
     }
+    
+    public static void migrate(Database database, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+//         Database database = new StandardDatabase(db);
+        if (DEBUG) {
+//             Log.d(TAG, "【Database Version】" + db.getVersion());
+            Log.d(TAG, "【Generate temp table】start");
+        }
+        generateTempTables(database, daoClasses);
+        if (DEBUG) {
+            Log.d(TAG, "【Generate temp table】complete");
+        }
+        dropAllTables(database, true, daoClasses);
+        createAllTables(database, false, daoClasses);
 
+        if (DEBUG) {
+            Log.d(TAG, "【Restore data】start");
+        }
+        restoreData(database, daoClasses);
+        if (DEBUG) {
+            Log.d(TAG, "【Restore data】complete");
+        }
+    }
+    
     private static void generateTempTables(Database db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         for (int i = 0; i < daoClasses.length; i++) {
             String tempTableName = null;
