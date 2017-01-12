@@ -4,6 +4,8 @@
 
 GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可以很容易解决数据库升级问题，只需一行代码。
 
+原始代码来自[stackoverflow](http://stackoverflow.com/a/30334668/7161403)。
+
 ## 使用说明
 
 1.在根目录的build.gradle文件的repositories内添加如下代码：
@@ -62,6 +64,7 @@ MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
 ##感谢
 [greenDAO](https://github.com/greenrobot/greenDAO)
 
+[Pedro Okawa](http://stackoverflow.com/users/2200209/pedro-okawa)
 
 ##联系方式
 weibo:[@于卫国](http://weibo.com/weiguo58)
