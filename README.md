@@ -7,7 +7,7 @@ GreenDaoUpgradeHelper is a database upgrade helper for greenDao.Use GreenDaoUpgr
 
 The original code is from [stackoverflow](http://stackoverflow.com/a/30334668/7161403).
 
-##How to use
+## How to use
 1.Add it in your root build.gradle at the end of repositories:
 ```
 	allprojects {
@@ -64,19 +64,19 @@ MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
 ```
 
 
-##Thanks
+## Thanks
 [greenDAO](https://github.com/greenrobot/greenDAO)
 
 [Pedro Okawa](http://stackoverflow.com/users/2200209/pedro-okawa)
 
-##Contact me
+## Contact me
 weibo:[@于卫国](http://weibo.com/weiguo58)
 
 gmail:[yuweiguocn@gmail.com](mailto:yuweiguocn@gmail.com)
 
 blog:[yuweiguo's blog](http://yuweiguocn.github.io)
 
-##License
+## License
 ```
 Copyright 2016 yuweiguocn
 
