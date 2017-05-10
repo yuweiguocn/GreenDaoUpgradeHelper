@@ -1,7 +1,7 @@
 # GreenDaoUpgradeHelper
 
 [![Release](https://jitpack.io/v/yuweiguocn/GreenDaoUpgradeHelper.svg)](https://jitpack.io/#yuweiguocn/GreenDaoUpgradeHelper)
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-GreenDaoUpgradeHelper-brightgreen.svg?style=flat)]()
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-GreenDaoUpgradeHelper-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/4853)
 
 GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可以很容易解决数据库升级问题，只需一行代码。
 
