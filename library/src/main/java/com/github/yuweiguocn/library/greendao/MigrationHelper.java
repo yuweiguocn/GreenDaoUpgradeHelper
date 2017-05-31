@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * 
- * please call {@link #migrate(SQLiteDatabase, Class[])}
+ * please call {@link #migrate(SQLiteDatabase, Class[])} or {@link #migrate(Database, Class[])}
  * 
  */
 public final class MigrationHelper {
@@ -31,9 +31,12 @@ public final class MigrationHelper {
     private static final String SQLITE_TEMP_MASTER = "sqlite_temp_master";
 
     public static void migrate(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
-        Database database = new StandardDatabase(db);
-
         printLog("【The Old Database Version】" + db.getVersion());
+        Database database = new StandardDatabase(db);
+        migrate(database, daoClasses);
+    }
+
+    public static void migrate(Database database, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         printLog("【Generate temp table】start");
         generateTempTables(database, daoClasses);
         printLog("【Generate temp table】complete");

@@ -23,7 +23,7 @@ GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可
 ```
 	dependencies {
 	        compile 'org.greenrobot:greendao:3.2.0'
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.3.0'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.4.0'
 	}
 ```
 如果你使用的greendao是3.0以前的版本，请使用下面的依赖：
@@ -45,7 +45,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
         super(context, name, factory);
     }
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade(Database db, int oldVersion, int newVersion) {
         MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
     }
 }

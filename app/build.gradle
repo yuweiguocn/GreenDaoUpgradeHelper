@@ -32,4 +32,5 @@ dependencies {
 
 //    compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.1.0'
     compile project(':library')
+    compile 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
 }
