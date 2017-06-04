@@ -2,6 +2,8 @@
 
 [![Release](https://jitpack.io/v/yuweiguocn/GreenDaoUpgradeHelper.svg)](https://jitpack.io/#yuweiguocn/GreenDaoUpgradeHelper) 
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-GreenDaoUpgradeHelper-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/4853)
+[ ![Download](https://api.bintray.com/packages/yuweiguocn/maven/GreenDaoUpgradeHelper/images/download.svg) ](https://bintray.com/yuweiguocn/maven/GreenDaoUpgradeHelper/_latestVersion)
+
 
 GreenDaoUpgradeHelper is a database upgrade helper for greenDao.Use GreenDaoUpgradeHelper can easy solve database upgrade that's just need one line code.
 
