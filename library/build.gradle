@@ -1,11 +1,11 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'com.novoda.bintray-release'
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion '25.0.0'
 
     defaultConfig {
-        minSdkVersion 8
+        minSdkVersion 9
         targetSdkVersion 23
         versionCode 130
         versionName "1.3"
@@ -16,9 +16,23 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    lintOptions {
+        abortOnError false
+    }
+
 }
 
 dependencies {
     compile 'org.greenrobot:greendao:3.2.0'
     compile 'com.android.support:support-annotations:24.2.1'
+}
+
+
+publish {
+    userOrg = 'yuweiguocn'//用户名
+    groupId = 'io.github.yuweiguocn'//包名
+    artifactId = 'GreenDaoUpgradeHelper'//类库名
+    publishVersion = '1.4.0'//版本号
+    desc = 'To solve database upgrade of greenDao and just need one line code.'//描述
+    website = 'https://github.com/yuweiguocn/GreenDaoUpgradeHelper'//对应的github网址
 }
