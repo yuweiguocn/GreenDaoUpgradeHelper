@@ -24,7 +24,7 @@ GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可
 ```
 	dependencies {
 	        compile 'org.greenrobot:greendao:3.2.0'
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.4.0'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v2.0.0'
 	}
 ```
 如果你使用的greendao是3.0以前的版本，请使用下面的依赖：
@@ -37,7 +37,18 @@ GreenDaoUpgradeHelper是一个greenDao的数据库升级帮助类。使用它可
 
 3.添加一个新类继承**DaoMaster.OpenHelper**，添加构造函数并实现**onUpgrade**方法,在onUpgrade方法添加如下代码即可，参数为所有的Dao类：  
 ```
-	MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class，TestData3Dao.class);
+MigrationHelper.migrate(db, new MigrationHelper.ReCreateAllTableListener() {
+            
+            @Override
+            public void onCreateAllTables(Database db, boolean ifNotExists) {
+                DaoMaster.createAllTables(db, ifNotExists);
+            }
+            
+            @Override
+            public void onDropAllTables(Database db, boolean ifExists) {
+                DaoMaster.dropAllTables(db, ifExists);
+            }
+        },TestDataDao.class, TestData2Dao.class, TestData3Dao.class);
 ```
 完整代码：  
 ```
@@ -47,7 +58,18 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
     }
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
-        MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
+        MigrationHelper.migrate(db, new MigrationHelper.ReCreateAllTableListener() {
+                    
+                    @Override
+                    public void onCreateAllTables(Database db, boolean ifNotExists) {
+                        DaoMaster.createAllTables(db, ifNotExists);
+                    }
+                    
+                    @Override
+                    public void onDropAllTables(Database db, boolean ifExists) {
+                        DaoMaster.dropAllTables(db, ifExists);
+                    }
+                },TestDataDao.class, TestData2Dao.class, TestData3Dao.class);
     }
 }
 

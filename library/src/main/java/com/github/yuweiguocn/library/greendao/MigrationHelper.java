@@ -12,6 +12,7 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.database.StandardDatabase;
 import org.greenrobot.greendao.internal.DaoConfig;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -30,9 +31,26 @@ public final class MigrationHelper {
     private static final String SQLITE_MASTER = "sqlite_master";
     private static final String SQLITE_TEMP_MASTER = "sqlite_temp_master";
 
+    private static WeakReference<ReCreateAllTableListener> weakListener;
+
+    public interface ReCreateAllTableListener{
+        void onCreateAllTables(Database db, boolean ifNotExists);
+        void onDropAllTables(Database db, boolean ifExists);
+    }
+
     public static void migrate(SQLiteDatabase db, Class<? extends AbstractDao<?, ?>>... daoClasses) {
         printLog("【The Old Database Version】" + db.getVersion());
         Database database = new StandardDatabase(db);
+        migrate(database, daoClasses);
+    }
+
+    public static void migrate(SQLiteDatabase db, ReCreateAllTableListener listener, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        weakListener = new WeakReference<>(listener);
+        migrate(db, daoClasses);
+    }
+
+    public static void migrate(Database database, ReCreateAllTableListener listener, Class<? extends AbstractDao<?, ?>>... daoClasses) {
+        weakListener = new WeakReference<>(listener);
         migrate(database, daoClasses);
     }
 
@@ -41,9 +59,16 @@ public final class MigrationHelper {
         generateTempTables(database, daoClasses);
         printLog("【Generate temp table】complete");
 
-        dropAllTables(database, true, daoClasses);
-        createAllTables(database, false, daoClasses);
-
+        ReCreateAllTableListener listener = weakListener.get();
+        if (listener != null) {
+            listener.onDropAllTables(database, true);
+            printLog("【Drop all table by listener】");
+            listener.onCreateAllTables(database, false);
+            printLog("【Create all table by listener】");
+        } else {
+            dropAllTables(database, true, daoClasses);
+            createAllTables(database, false, daoClasses);
+        }
         printLog("【Restore data】start");
         restoreData(database, daoClasses);
         printLog("【Restore data】complete");
@@ -119,12 +144,12 @@ public final class MigrationHelper {
 
     private static void dropAllTables(Database db, boolean ifExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "dropTable", ifExists, daoClasses);
-        printLog("【Drop all table】");
+        printLog("【Drop all table by reflect】");
     }
 
     private static void createAllTables(Database db, boolean ifNotExists, @NonNull Class<? extends AbstractDao<?, ?>>... daoClasses) {
         reflectMethod(db, "createTable", ifNotExists, daoClasses);
-        printLog("【Create all table】");
+        printLog("【Create all table by reflect】");
     }
 
     /**

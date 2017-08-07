@@ -24,7 +24,7 @@ The original code is from [stackoverflow](http://stackoverflow.com/a/30334668/71
 ```
 	dependencies {
 	        compile 'org.greenrobot:greendao:3.2.0'
-	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.4.0'
+	        compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v2.0.0'
 	}
 ```
 or (greendao 3.0 below)
@@ -38,7 +38,16 @@ or (greendao 3.0 below)
 3.Add a new class that extends **DaoMaster.OpenHelper**,add a constructor,implement **onUpgrade** method and called **migrate** method,arguments is all of generated Dao class:
 
 ```
-MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
+MigrationHelper.migrate(db, new MigrationHelper.ReCreateAllTableListener() {
+            @Override
+            public void onCreateAllTables(Database db, boolean ifNotExists) {
+                DaoMaster.createAllTables(db, ifNotExists);
+            }
+            @Override
+            public void onDropAllTables(Database db, boolean ifExists) {
+                DaoMaster.dropAllTables(db, ifExists);
+            }
+        },TestDataDao.class, TestData2Dao.class, TestData3Dao.class);
 ```
 
 
@@ -50,7 +59,16 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
     }
     @Override
     public void onUpgrade(Database db, int oldVersion, int newVersion) {
-        MigrationHelper.migrate(db,TestDataDao.class,TestData2Dao.class,TestData3Dao.class);
+        MigrationHelper.migrate(db, new MigrationHelper.ReCreateAllTableListener() {
+                    @Override
+                    public void onCreateAllTables(Database db, boolean ifNotExists) {
+                        DaoMaster.createAllTables(db, ifNotExists);
+                    }
+                    @Override
+                    public void onDropAllTables(Database db, boolean ifExists) {
+                        DaoMaster.dropAllTables(db, ifExists);
+                    }
+                },TestDataDao.class, TestData2Dao.class, TestData3Dao.class);
     }
 }
 
