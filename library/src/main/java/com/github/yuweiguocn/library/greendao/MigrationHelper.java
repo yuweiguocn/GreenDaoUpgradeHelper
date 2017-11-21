@@ -197,7 +197,7 @@ public final class MigrationHelper {
                     final String columnSQL = TextUtils.join(",", properties);
 
                     StringBuilder insertTableStringBuilder = new StringBuilder();
-                    insertTableStringBuilder.append("INSERT INTO ").append(tableName).append(" (");
+                    insertTableStringBuilder.append("REPLACE INTO ").append(tableName).append(" (");
                     insertTableStringBuilder.append(columnSQL);
                     insertTableStringBuilder.append(") SELECT ");
                     insertTableStringBuilder.append(columnSQL);
