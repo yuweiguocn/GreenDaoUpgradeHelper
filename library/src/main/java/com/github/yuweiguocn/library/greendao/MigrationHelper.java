@@ -190,7 +190,7 @@ public final class MigrationHelper {
                 for (int j = 0; j < daoConfig.properties.length; j++) {
                     String columnName = daoConfig.properties[j].columnName;
                     if (columns.contains(columnName)) {
-                        properties.add(columnName);
+                        properties.add("`" + columnName + "`");
                     }
                 }
                 if (properties.size() > 0) {
