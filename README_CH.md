@@ -73,7 +73,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
     }
 }
 
-```  
+```
 
 4.初始化
 
@@ -84,6 +84,14 @@ MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
         daoMaster = new DaoMaster(helper.getWritableDatabase());
 ```
 
+### ProGuard混淆规则
+
+```java
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+    public static void dropTable(org.greenrobot.greendao.database.Database, boolean);
+    public static void createTable(org.greenrobot.greendao.database.Database, boolean);
+}
+```
 
 ## 感谢
 [greenDAO](https://github.com/greenrobot/greenDAO)

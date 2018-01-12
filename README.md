@@ -72,7 +72,7 @@ public class MySQLiteOpenHelper extends DaoMaster.OpenHelper {
     }
 }
 
-```  
+```
 
 4.Finally,init like this:
 
@@ -83,6 +83,14 @@ MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
         daoMaster = new DaoMaster(helper.getWritableDatabase());
 ```
 
+### ProGuard rule
+
+```java
+-keepclassmembers class * extends org.greenrobot.greendao.AbstractDao {
+    public static void dropTable(org.greenrobot.greendao.database.Database, boolean);
+    public static void createTable(org.greenrobot.greendao.database.Database, boolean);
+}
+```
 
 ## Thanks
 [greenDAO](https://github.com/greenrobot/greenDAO)
