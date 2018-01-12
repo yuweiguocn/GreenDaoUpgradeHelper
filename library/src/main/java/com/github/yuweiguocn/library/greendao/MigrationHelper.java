@@ -59,7 +59,11 @@ public final class MigrationHelper {
         generateTempTables(database, daoClasses);
         printLog("【Generate temp table】complete");
 
-        ReCreateAllTableListener listener = weakListener.get();
+        ReCreateAllTableListener listener = null;
+        if (weakListener != null) {
+            listener = weakListener.get();
+        }
+
         if (listener != null) {
             listener.onDropAllTables(database, true);
             printLog("【Drop all table by listener】");
