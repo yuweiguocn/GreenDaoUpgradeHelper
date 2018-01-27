@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 23
-        versionCode 201
-        versionName "2.0.1"
+        versionCode 202
+        versionName "2.0.2"
     }
     buildTypes {
         release {
@@ -32,7 +32,7 @@ publish {
     userOrg = 'yuweiguocn'//用户名
     groupId = 'io.github.yuweiguocn'//包名
     artifactId = 'GreenDaoUpgradeHelper'//类库名
-    publishVersion = '2.0.1'//版本号
+    publishVersion = '2.0.2'//版本号
     desc = 'To solve database upgrade of greenDao and just need one line code.'//描述
     website = 'https://github.com/yuweiguocn/GreenDaoUpgradeHelper'//对应的github网址
 }
