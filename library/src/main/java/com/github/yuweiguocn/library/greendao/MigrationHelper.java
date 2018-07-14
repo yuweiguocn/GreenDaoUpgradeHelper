@@ -189,22 +189,39 @@ public final class MigrationHelper {
 
             try {
                 // get all columns from tempTable, take careful to use the columns list
-                List<String> columns = getColumns(db, tempTableName);
-                ArrayList<String> properties = new ArrayList<>(columns.size());
-                for (int j = 0; j < daoConfig.properties.length; j++) {
-                    String columnName = daoConfig.properties[j].columnName;
-                    if (columns.contains(columnName)) {
-                        properties.add("`" + columnName + "`");
+                List<TableInfo> newTableInfos = TableInfo.getTableInfo(db, tableName);
+                List<TableInfo> tempTableInfos = TableInfo.getTableInfo(db, tempTableName);
+                ArrayList<String> selectColumns = new ArrayList<>(newTableInfos.size());
+                ArrayList<String> intoColumns = new ArrayList<>(newTableInfos.size());
+                for (TableInfo tableInfo : tempTableInfos) {
+                    if (newTableInfos.contains(tableInfo)) {
+                        String column = '`' + tableInfo.name + '`';
+                        intoColumns.add(column);
+                        selectColumns.add(column);
                     }
                 }
-                if (properties.size() > 0) {
-                    final String columnSQL = TextUtils.join(",", properties);
+                // NOT NULL columns list
+                for (TableInfo tableInfo : newTableInfos) {
+                    if (tableInfo.notnull && !tempTableInfos.contains(tableInfo)) {
+                        String column = '`' + tableInfo.name + '`';
+                        intoColumns.add(column);
 
+                        String value;
+                        if (tableInfo.dfltValue != null) {
+                            value = "'" + tableInfo.dfltValue + "' AS ";
+                        } else {
+                            value = "'' AS ";
+                        }
+                        selectColumns.add(value + column);
+                    }
+                }
+
+                if (intoColumns.size() != 0) {
                     StringBuilder insertTableStringBuilder = new StringBuilder();
                     insertTableStringBuilder.append("REPLACE INTO ").append(tableName).append(" (");
-                    insertTableStringBuilder.append(columnSQL);
+                    insertTableStringBuilder.append(TextUtils.join(",", intoColumns));
                     insertTableStringBuilder.append(") SELECT ");
-                    insertTableStringBuilder.append(columnSQL);
+                    insertTableStringBuilder.append(TextUtils.join(",", selectColumns));
                     insertTableStringBuilder.append(" FROM ").append(tempTableName).append(";");
                     db.execSQL(insertTableStringBuilder.toString());
                     printLog("【Restore data】 to " + tableName);
@@ -244,4 +261,56 @@ public final class MigrationHelper {
         }
     }
 
+    private static class TableInfo {
+        int cid;
+        String name;
+        String type;
+        boolean notnull;
+        String dfltValue;
+        boolean pk;
+
+        @Override
+        public boolean equals(Object o) {
+            return this == o
+                    || o != null
+                    && getClass() == o.getClass()
+                    && name.equals(((TableInfo) o).name);
+        }
+
+        @Override
+        public String toString() {
+            return "TableInfo{" +
+                    "cid=" + cid +
+                    ", name='" + name + '\'' +
+                    ", type='" + type + '\'' +
+                    ", notnull=" + notnull +
+                    ", dfltValue='" + dfltValue + '\'' +
+                    ", pk=" + pk +
+                    '}';
+        }
+
+        private static List<TableInfo> getTableInfo(Database db, String tableName) {
+            String sql = "PRAGMA table_info(" + tableName + ")";
+            printLog(sql);
+            Cursor cursor = db.rawQuery(sql, null);
+            if (cursor == null)
+                return new ArrayList<>();
+
+            TableInfo tableInfo;
+            List<TableInfo> tableInfos = new ArrayList<>();
+            while (cursor.moveToNext()) {
+                tableInfo = new TableInfo();
+                tableInfo.cid = cursor.getInt(0);
+                tableInfo.name = cursor.getString(1);
+                tableInfo.type = cursor.getString(2);
+                tableInfo.notnull = cursor.getInt(3) == 1;
+                tableInfo.dfltValue = cursor.getString(4);
+                tableInfo.pk = cursor.getInt(5) == 1;
+                tableInfos.add(tableInfo);
+                // printLog(tableName + "：" + tableInfo);
+            }
+            cursor.close();
+            return tableInfos;
+        }
+    }
 }
