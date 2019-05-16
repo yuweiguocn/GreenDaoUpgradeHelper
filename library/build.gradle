@@ -2,10 +2,9 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 android {
     compileSdkVersion 23
-    buildToolsVersion '25.0.0'
 
     defaultConfig {
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 23
         versionCode 210
         versionName "2.1.0"
@@ -24,7 +23,7 @@ android {
 
 dependencies {
     compile 'org.greenrobot:greendao:3.2.0'
-    compile 'com.android.support:support-annotations:24.2.1'
+    compile 'com.android.support:support-annotations:28.0.0'
 }
 
 
