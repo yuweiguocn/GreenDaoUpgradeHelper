@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 23
-        versionCode 220
-        versionName "2.2.0"
+        versionCode 221
+        versionName "2.2.1"
     }
     buildTypes {
         release {
@@ -22,8 +22,8 @@ android {
 }
 
 dependencies {
-    compile 'org.greenrobot:greendao:3.2.0'
-    compile 'com.android.support:support-annotations:28.0.0'
+    compileOnly 'org.greenrobot:greendao:3.2.0'
+    api 'com.android.support:support-annotations:28.0.0'
 }
 
 
@@ -31,7 +31,7 @@ publish {
     userOrg = 'yuweiguocn'//用户名
     groupId = 'io.github.yuweiguocn'//包名
     artifactId = 'GreenDaoUpgradeHelper'//类库名
-    publishVersion = '2.2.0'//版本号
+    publishVersion = '2.2.1'//版本号
     desc = 'To solve database upgrade of greenDao and just need one line code.'//描述
     website = 'https://github.com/yuweiguocn/GreenDaoUpgradeHelper'//对应的github网址
 }

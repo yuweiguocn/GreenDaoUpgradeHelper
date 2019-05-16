@@ -24,7 +24,7 @@ The original code is from [stackoverflow](http://stackoverflow.com/a/30334668/71
 ```
 	dependencies {
 	        compile 'org.greenrobot:greendao:3.2.0'
-	        compile 'io.github.yuweiguocn:GreenDaoUpgradeHelper:v2.2.0'
+	        compile 'io.github.yuweiguocn:GreenDaoUpgradeHelper:v2.2.1'
 	}
 ```
 or (greendao 3.0 below)
