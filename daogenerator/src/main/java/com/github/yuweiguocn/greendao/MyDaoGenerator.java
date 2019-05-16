@@ -16,7 +16,7 @@ public class MyDaoGenerator {
 
 
     private static void addTest(Schema schema) {
-        Entity testData = schema.addEntity("TestData");
+        Entity testData = schema.addEntity("Group");
         testData.addIdProperty().primaryKey().autoincrement();
         testData.addStringProperty("testString");
         testData.addLongProperty("testLong");

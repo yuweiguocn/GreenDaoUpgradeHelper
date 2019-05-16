@@ -33,7 +33,7 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'org.greenrobot:greendao:3.2.0'
 
-//    compile 'com.github.yuweiguocn:GreenDaoUpgradeHelper:v1.1.0'
-    implementation project(':library')
+    implementation 'io.github.yuweiguocn:GreenDaoUpgradeHelper:2.2.0'
+//    implementation project(':library')
     implementation 'net.zetetic:android-database-sqlcipher:3.5.7@aar'
 }

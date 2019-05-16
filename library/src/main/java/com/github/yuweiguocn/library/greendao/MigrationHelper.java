@@ -96,7 +96,7 @@ public final class MigrationHelper {
 
                 StringBuilder insertTableStringBuilder = new StringBuilder();
                 insertTableStringBuilder.append("CREATE TEMPORARY TABLE ").append(tempTableName);
-                insertTableStringBuilder.append(" AS SELECT * FROM ").append(tableName).append(";");
+                insertTableStringBuilder.append(" AS SELECT * FROM `").append(tableName).append("`;");
                 db.execSQL(insertTableStringBuilder.toString());
                 printLog("【Table】" + tableName +"\n ---Columns-->"+getColumnsStr(daoConfig));
                 printLog("【Generate temp table】" + tempTableName);
@@ -111,7 +111,7 @@ public final class MigrationHelper {
             return false;
         }
         String dbName = isTemp ? SQLITE_TEMP_MASTER : SQLITE_MASTER;
-        String sql = "SELECT COUNT(*) FROM " + dbName + " WHERE type = ? AND name = ?";
+        String sql = "SELECT COUNT(*) FROM `" + dbName + "` WHERE type = ? AND name = ?";
         Cursor cursor=null;
         int count = 0;
         try {
@@ -218,7 +218,7 @@ public final class MigrationHelper {
 
                 if (intoColumns.size() != 0) {
                     StringBuilder insertTableStringBuilder = new StringBuilder();
-                    insertTableStringBuilder.append("REPLACE INTO ").append(tableName).append(" (");
+                    insertTableStringBuilder.append("REPLACE INTO `").append(tableName).append("` (");
                     insertTableStringBuilder.append(TextUtils.join(",", intoColumns));
                     insertTableStringBuilder.append(") SELECT ");
                     insertTableStringBuilder.append(TextUtils.join(",", selectColumns));
@@ -290,7 +290,7 @@ public final class MigrationHelper {
         }
 
         private static List<TableInfo> getTableInfo(Database db, String tableName) {
-            String sql = "PRAGMA table_info(" + tableName + ")";
+            String sql = "PRAGMA table_info(`" + tableName + "`)";
             printLog(sql);
             Cursor cursor = db.rawQuery(sql, null);
             if (cursor == null)

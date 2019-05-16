@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import com.github.yuweiguocn.demo.greendao.about.AboutActivity;
 import com.github.yuweiguocn.demo.greendao.base.BaseActivity;
 import com.github.yuweiguocn.demo.greendao.db.DaoMaster;
+import com.github.yuweiguocn.demo.greendao.db.Group;
+import com.github.yuweiguocn.demo.greendao.db.GroupDao;
 import com.github.yuweiguocn.demo.greendao.db.MySQLiteOpenHelper;
 import com.github.yuweiguocn.demo.greendao.db.TestData2;
 import com.github.yuweiguocn.demo.greendao.db.TestData2Dao;
@@ -33,14 +35,20 @@ public class MainActivity extends BaseActivity {
         MySQLiteOpenHelper helper = new MySQLiteOpenHelper(this, "test.db",
                 null);
         daoMaster = new DaoMaster(helper.getEncryptedWritableDb("12342"));
-        TestData2 testData2 = new TestData2(0L, "12342", 123L, new Date(), 1234, true);
-        TestData2Dao testData2Dao = daoMaster.newSession().getTestData2Dao();
-        testData2Dao.insert(testData2);
+        TestData2 testData3 = new TestData2();
+                TestData2Dao testData2Dao = daoMaster.newSession().getTestData2Dao();
+        testData2Dao.insert(testData3);
+        Group group1 = new Group();
+        group1.setTestBoolean(true);
+        group1.setTestDate(new Date());
+        group1.setTestString(String.valueOf(System.currentTimeMillis()));
+        group1.setTestLong(System.currentTimeMillis());
+        GroupDao groupDao = daoMaster.newSession().getGroupDao();
+        groupDao.insert(group1);
 
         Log.d("MigrationHelper", "TestData2 " + testData2Dao.loadAll().toString());
+        Log.d("MigrationHelper", "Group " + groupDao.loadAll().toString());
     }
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

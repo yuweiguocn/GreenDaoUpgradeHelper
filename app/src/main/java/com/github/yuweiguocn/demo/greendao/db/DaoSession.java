@@ -8,11 +8,11 @@ import org.greenrobot.greendao.database.Database;
 import org.greenrobot.greendao.identityscope.IdentityScopeType;
 import org.greenrobot.greendao.internal.DaoConfig;
 
-import com.github.yuweiguocn.demo.greendao.db.TestData;
+import com.github.yuweiguocn.demo.greendao.db.Group;
 import com.github.yuweiguocn.demo.greendao.db.TestData2;
 import com.github.yuweiguocn.demo.greendao.db.TestData3;
 
-import com.github.yuweiguocn.demo.greendao.db.TestDataDao;
+import com.github.yuweiguocn.demo.greendao.db.GroupDao;
 import com.github.yuweiguocn.demo.greendao.db.TestData2Dao;
 import com.github.yuweiguocn.demo.greendao.db.TestData3Dao;
 
@@ -25,11 +25,11 @@ import com.github.yuweiguocn.demo.greendao.db.TestData3Dao;
  */
 public class DaoSession extends AbstractDaoSession {
 
-    private final DaoConfig testDataDaoConfig;
+    private final DaoConfig groupDaoConfig;
     private final DaoConfig testData2DaoConfig;
     private final DaoConfig testData3DaoConfig;
 
-    private final TestDataDao testDataDao;
+    private final GroupDao groupDao;
     private final TestData2Dao testData2Dao;
     private final TestData3Dao testData3Dao;
 
@@ -37,8 +37,8 @@ public class DaoSession extends AbstractDaoSession {
             daoConfigMap) {
         super(db);
 
-        testDataDaoConfig = daoConfigMap.get(TestDataDao.class).clone();
-        testDataDaoConfig.initIdentityScope(type);
+        groupDaoConfig = daoConfigMap.get(GroupDao.class).clone();
+        groupDaoConfig.initIdentityScope(type);
 
         testData2DaoConfig = daoConfigMap.get(TestData2Dao.class).clone();
         testData2DaoConfig.initIdentityScope(type);
@@ -46,23 +46,23 @@ public class DaoSession extends AbstractDaoSession {
         testData3DaoConfig = daoConfigMap.get(TestData3Dao.class).clone();
         testData3DaoConfig.initIdentityScope(type);
 
-        testDataDao = new TestDataDao(testDataDaoConfig, this);
+        groupDao = new GroupDao(groupDaoConfig, this);
         testData2Dao = new TestData2Dao(testData2DaoConfig, this);
         testData3Dao = new TestData3Dao(testData3DaoConfig, this);
 
-        registerDao(TestData.class, testDataDao);
+        registerDao(Group.class, groupDao);
         registerDao(TestData2.class, testData2Dao);
         registerDao(TestData3.class, testData3Dao);
     }
     
     public void clear() {
-        testDataDaoConfig.clearIdentityScope();
+        groupDaoConfig.clearIdentityScope();
         testData2DaoConfig.clearIdentityScope();
         testData3DaoConfig.clearIdentityScope();
     }
 
-    public TestDataDao getTestDataDao() {
-        return testDataDao;
+    public GroupDao getGroupDao() {
+        return groupDao;
     }
 
     public TestData2Dao getTestData2Dao() {
